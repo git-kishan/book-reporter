@@ -1,22 +1,17 @@
 package com.notebook.cvxt001122.bookbank;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.appbar.AppBarLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.fragment.app.Fragment;
@@ -24,23 +19,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.DashPathEffect;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,OnMenuClick{
 
@@ -106,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.setOnClickListener(this);
         swipeRefreshLayout=findViewById(R.id.swipe_refresh);
         keyList.clear();
+        handleBroadcasting();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -176,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                  String interval = (String) snapshot.child("interval").getValue();
                 Model model = new Model(bookName, issuedDate, returningDate, interval,false);
                 dataList.add(model);
-                Log.i("TAG","key :-"+snapshot.getKey() );
 
             }
             adapter.notifyDataSetChanged();
@@ -205,8 +199,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    String returningDate = (String) snapshot.child("returningdate").getValue();
-
+                    boolean isBroadcasted = (boolean) snapshot.child("isbroadcasted").getValue();
+                    String returningDate= (String) snapshot.child("returningdate").getValue();
+                    String bookName= (String) snapshot.child("bookname").getValue();
+                    int [] seperateDate=spilitReturningDate(returningDate);
+                    if(!isBroadcasted){
+                        Intent intent=new Intent(MainActivity.this,OneDayBeforeReceiver.class);
+                        intent.putExtra("bookname",bookName );
+                        int  broadcastId= (int) System.currentTimeMillis();
+                        //pending intent for one day before receiver
+                        PendingIntent pendingIntent=PendingIntent.getBroadcast(MainActivity.this,broadcastId ,
+                                intent,PendingIntent.FLAG_ONE_SHOT );
+                        AlarmManager alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.setTimeInMillis(System.currentTimeMillis());
+                        calendar.set(Calendar.HOUR,3);
+                        calendar.set(Calendar.MINUTE,5);
+                        calendar.set(Calendar.DATE,seperateDate[0]-1);
+                        calendar.set(Calendar.MONTH,seperateDate[1]);
+                        calendar.set(Calendar.YEAR,seperateDate[2] );
+                        calendar.add(Calendar.DATE,-1 );
+                       // alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                        //pending intent for on day receiver
+                        Intent secondIntent=new Intent(MainActivity.this,OneDayBeforeReceiver.class);
+                        int  secondBroadcastId= (int) System.currentTimeMillis();
+                        PendingIntent secondPendingIntent=PendingIntent.getBroadcast(MainActivity.this,secondBroadcastId ,
+                                secondIntent,PendingIntent.FLAG_ONE_SHOT );
+                        calendar.add(Calendar.DATE,1 );
+                        secondIntent.putExtra("bookname", bookName);
+                       // alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() ,secondPendingIntent );
+                        Intent intent1=new Intent(MainActivity.this,HandleNotificationService.class);
+                        intent1.putExtra("bookname", "kishan");
+                        startService(intent1);
+                    }
                 }
             }
 
@@ -215,5 +240,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+    private int [] spilitReturningDate(String date){
+        String [] day=date.split("/", 3);
+        int [] seperateDate=new int[] {Integer.parseInt(day[0]),Integer.parseInt(day[1]),Integer.parseInt(day[1])};
+        return seperateDate;
     }
 }
