@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380868042404",
+    "firebase_url": "https://bookbank-f9330.firebaseio.com",
+    "project_id": "bookbank-f9330",
+    "storage_bucket": "bookbank-f9330.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380868042404:android:e6f07ba2e98eb7d0",
+        "android_client_info": {
+          "package_name": "com.notebook.cvxt001122.bookbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380868042404-c7p4dbq1in319s45i0scec1uvn06ru5c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.notebook.cvxt001122.bookbank",
+            "certificate_hash": "9ca79a42e0c96c6958cddc99e7b8dc8644f95493"
+          }
+        },
+        {
+          "client_id": "380868042404-l1qfklpf9vg0gtpla0ipkfahv497s4qs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrmg8tAykIbFckmOlYyMrgfULgfDpzuvQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380868042404-l1qfklpf9vg0gtpla0ipkfahv497s4qs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

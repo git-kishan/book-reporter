@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/root_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+<com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appbar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:layout_scrollFlags="exitUntilCollapsed"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
+
+</com.google.android.material.appbar.AppBarLayout>
+
+  <com.facebook.shimmer.ShimmerFrameLayout
+      android:id="@+id/shimmer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+      <LinearLayout
+          android:visibility="gone"
+          android:id="@+id/shimmer_effect"
+          android:layout_width="match_parent"
+          android:orientation="vertical"
+          android:layout_marginTop="?attr/actionBarSize"
+          android:layout_height="match_parent">
+          <include layout="@layout/shimmer_layout"/>
+          <include layout="@layout/shimmer_layout"/>
+          <include layout="@layout/shimmer_layout"/>
+          <include layout="@layout/shimmer_layout"/>
+          <include layout="@layout/shimmer_layout"/>
+
+      </LinearLayout>
+  </com.facebook.shimmer.ShimmerFrameLayout>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_refresh"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:src="@drawable/add"
+        app:rippleColor="#FFFFFF"
+        android:layout_margin="16dp"/>
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
