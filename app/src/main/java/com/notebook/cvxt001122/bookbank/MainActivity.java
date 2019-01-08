@@ -205,7 +205,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    String returningDate = (String) snapshot.child("returningdate").getValue();
+                    boolean isBroadcasted = (boolean) snapshot.child("isbroadcasted").getValue();
+                    if(!isBroadcasted){
+                        Intent intent=new Intent();
+                    }
 
                 }
             }
