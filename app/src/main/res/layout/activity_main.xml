@@ -57,6 +57,7 @@
         android:layout_gravity="bottom|right"
         android:src="@drawable/add"
         app:rippleColor="#FFFFFF"
+        app:backgroundTint="@color/fabcolor"
         android:layout_margin="16dp"/>
     <FrameLayout
         android:id="@+id/fragment_container"

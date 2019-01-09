@@ -11,9 +11,11 @@ public class OnSubmitDayReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String bookName=intent.getStringExtra("bookname");
-        Intent intent1=new Intent(context,HandleNotificationService.class);
-        intent1.putExtra("bookname", bookName);
-        context.startService(intent1);
+        if(intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            String bookName = intent.getStringExtra("bookname");
+            Intent intent1 = new Intent(context, HandleNotificationService.class);
+            intent1.putExtra("bookname", bookName);
+            context.startService(intent1);
+        }
     }
 }

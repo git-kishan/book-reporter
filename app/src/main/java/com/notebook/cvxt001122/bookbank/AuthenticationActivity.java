@@ -51,8 +51,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         startActivityForResult(AuthUI.getInstance().
                 createSignInIntentBuilder().setAvailableProviders(providers).
-                setTheme(R.style.signInTheme).
-                setLogo(R.drawable.librarybig).
+                setLogo(R.drawable.book).
                 setIsSmartLockEnabled(false).build(), RC_SIGN_IN);
 
     }

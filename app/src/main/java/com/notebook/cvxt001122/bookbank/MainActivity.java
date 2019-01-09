@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shimmerFrameLayout=findViewById(R.id.shimmer);
         shimmerEffect=findViewById(R.id.shimmer_effect);
         toolbar=findViewById(R.id.toolbar);
-        toolbar.setTitle("book bank");
+        toolbar.setTitle("Book bank");
         toolbar.inflateMenu(R.menu.toolbar_menu);
         frameLayout=findViewById(R.id.fragment_container);
         fab=findViewById(R.id.fab);

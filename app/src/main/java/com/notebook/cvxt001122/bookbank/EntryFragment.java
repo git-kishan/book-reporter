@@ -193,11 +193,11 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
     }
     private boolean checkValidation(){
         if(bookNameInputEditText.getText().toString().length()==0){
-            Snackbar.make(constraintLayout,"book name is empty" ,Snackbar.LENGTH_SHORT ).show();
+            Snackbar.make(constraintLayout,"Book name is empty" ,Snackbar.LENGTH_SHORT ).show();
             return false;
         }
         else if(bookNameInputEditText.getText().toString().length()>30){
-            Snackbar.make(constraintLayout,"book name must be less 30" ,Snackbar.LENGTH_SHORT ).show();
+            Snackbar.make(constraintLayout,"Book name must be less 30" ,Snackbar.LENGTH_SHORT ).show();
             return false;
         }
         else if(issuedDateInputEditText.getText().toString().length()==0){
