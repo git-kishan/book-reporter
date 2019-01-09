@@ -27,7 +27,7 @@ public class MyIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         bookName=intent.getStringExtra("bookname");
-        Log.i("TAG","inside onHandleIntent of myIntentService" );
+        if(bookName!=null)
         showNotification();
     }
     private void showNotification(){
@@ -35,7 +35,7 @@ public class MyIntentService extends IntentService {
         NotificationCompat.Builder builder=new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setContentTitle("book returning notification");
         builder.setSmallIcon(R.drawable.librarysmall);
-        builder.setContentText("this is a notification");
+        builder.setContentText("last day to return "+bookName);
         Uri uri=RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(uri);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText("today is the last date of submit "+bookName+" book"));

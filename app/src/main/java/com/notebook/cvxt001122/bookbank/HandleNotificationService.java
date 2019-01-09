@@ -29,7 +29,7 @@ public class HandleNotificationService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         bookName=intent.getStringExtra("bookname");
-        Log.i("TAG","inside onHandleIntent of handleNotification" );
+        if(bookName!=null)
         showNotification();
     }
     private void showNotification(){
@@ -37,7 +37,7 @@ public class HandleNotificationService extends IntentService {
         NotificationCompat.Builder builder=new NotificationCompat.Builder(this, CHANNEL_ID);
         builder.setContentTitle("book returning notification");
         builder.setSmallIcon(R.drawable.librarysmall);
-        builder.setContentText("this is a notification");
+        builder.setContentText("one day left to return "+bookName);
         Uri uri=RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(uri);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText("one day left to submit "+bookName));

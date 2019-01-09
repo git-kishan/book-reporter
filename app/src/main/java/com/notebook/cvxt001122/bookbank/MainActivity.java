@@ -1,6 +1,10 @@
 package com.notebook.cvxt001122.bookbank;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 
 import androidx.annotation.NonNull;
@@ -28,6 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -47,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CoordinatorLayout coordinatorLayout;
     private int counter=0;
     private ShimmerFrameLayout shimmerFrameLayout;
-    public static final String parmanent="0";
-    public static final String temporary="1";
+    public static final String parmanent="parm";
+    public static final String temporary="temp";
     private FirebaseDatabase database;
     private DatabaseReference reference;
     private FirebaseAuth auth;
@@ -94,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shimmerEffect=findViewById(R.id.shimmer_effect);
         toolbar=findViewById(R.id.toolbar);
         toolbar.setTitle("book bank");
+        toolbar.inflateMenu(R.menu.toolbar_menu);
         frameLayout=findViewById(R.id.fragment_container);
         fab=findViewById(R.id.fab);
         coordinatorLayout=findViewById(R.id.root_layout);
@@ -107,6 +114,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dataList.clear();
                 keyList.clear();
                 reference.addValueEventListener(eventListener);
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if(item.getItemId()==R.id.logOut){
+                    AuthUI.getInstance().signOut(MainActivity.this).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            startActivity(new Intent(MainActivity.this,AuthenticationActivity.class));
+
+                        }
+                    });
+                }
+                return false;
             }
         });
     }
@@ -194,14 +216,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void handleBroadcasting(){
 
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    boolean isBroadcasted = (boolean) snapshot.child("isbroadcasted").getValue();
-                    String returningDate= (String) snapshot.child("returningdate").getValue();
-                    String bookName= (String) snapshot.child("bookname").getValue();
+
+                    boolean isBroadcasted;
+                    String returningDate,bookName;
+                    try {
+                         isBroadcasted = (boolean) snapshot.child("isbroadcasted").getValue();
+                         returningDate = (String) snapshot.child("returningdate").getValue();
+                         bookName = (String) snapshot.child("bookname").getValue();
+                    }catch (NullPointerException e){
+                        Log.i("TAG","null pointer exception in invoking boolean,"+e.getLocalizedMessage() );
+                    }finally {
+                        isBroadcasted = (boolean) snapshot.child("isbroadcasted").getValue();
+                        returningDate = (String) snapshot.child("returningdate").getValue();
+                        bookName = (String) snapshot.child("bookname").getValue();
+                    }
                     int [] seperateDate=spilitReturningDate(returningDate);
                     if(!isBroadcasted){
                         Intent intent=new Intent(MainActivity.this,OneDayBeforeReceiver.class);
@@ -213,24 +246,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         AlarmManager alarmManager= (AlarmManager) getSystemService(ALARM_SERVICE);
                         Calendar calendar=Calendar.getInstance();
                         calendar.setTimeInMillis(System.currentTimeMillis());
-                        calendar.set(Calendar.HOUR,3);
-                        calendar.set(Calendar.MINUTE,5);
-                        calendar.set(Calendar.DATE,seperateDate[0]-1);
+                        calendar.set(Calendar.HOUR,8);
+                        calendar.set(Calendar.MINUTE,30);
+                        calendar.set(Calendar.DATE,seperateDate[0]);
+                        calendar.add(Calendar.DATE,-1 );
                         calendar.set(Calendar.MONTH,seperateDate[1]);
                         calendar.set(Calendar.YEAR,seperateDate[2] );
-                        calendar.add(Calendar.DATE,-1 );
-                       // alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                        if(calendar.getTimeInMillis()<System.currentTimeMillis()) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                        }
                         //pending intent for on day receiver
-                        Intent secondIntent=new Intent(MainActivity.this,OneDayBeforeReceiver.class);
+
+                        Intent secondIntent=new Intent(MainActivity.this,OnSubmitDayReceiver.class);
                         int  secondBroadcastId= (int) System.currentTimeMillis();
                         PendingIntent secondPendingIntent=PendingIntent.getBroadcast(MainActivity.this,secondBroadcastId ,
                                 secondIntent,PendingIntent.FLAG_ONE_SHOT );
                         calendar.add(Calendar.DATE,1 );
                         secondIntent.putExtra("bookname", bookName);
-                       // alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() ,secondPendingIntent );
-                        Intent intent1=new Intent(MainActivity.this,HandleNotificationService.class);
-                        intent1.putExtra("bookname", "kishan");
-                        startService(intent1);
+                        if(calendar.getTimeInMillis()>=System.currentTimeMillis()) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), secondPendingIntent);
+                        }
+                        snapshot.child("isbroadcasted").getRef().setValue(true);
+
+
                     }
                 }
             }
@@ -243,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private int [] spilitReturningDate(String date){
         String [] day=date.split("/", 3);
-        int [] seperateDate=new int[] {Integer.parseInt(day[0]),Integer.parseInt(day[1]),Integer.parseInt(day[1])};
+        int [] seperateDate=new int[] {Integer.parseInt(day[0]),Integer.parseInt(day[1]),Integer.parseInt(day[2])};
         return seperateDate;
     }
 }

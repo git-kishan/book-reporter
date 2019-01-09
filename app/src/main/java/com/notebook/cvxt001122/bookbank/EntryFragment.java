@@ -107,9 +107,12 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
                 radioButton=radioGroup.findViewById(i);
                 if(radioButton.isChecked()&& radioButton.getId()==R.id.temporary){
                     radioButtonReference="temp";
+                    Log.i("TAG","radio button reference temporary" );
                 }
                 if(radioButton.isChecked()&& radioButton.getId()==R.id.parmanent){
                     radioButtonReference = "parm";
+                    Log.i("TAG","radio button reference parmanent" );
+
                 }
             }
         });
@@ -143,11 +146,16 @@ public class EntryFragment extends Fragment implements View.OnClickListener {
         if(valid){
             String bookname=bookNameInputEditText.getText().toString();
             String issuedate=calendar.get(Calendar.DATE)+"/"+calendar.get(Calendar.MONTH)+"/"+calendar.get(Calendar.YEAR);
-            if(MainActivity.temporary.equals(String.valueOf(radioButtonReference)))
-              calendar.add(Calendar.DATE, 15);
 
-            if(MainActivity.parmanent.equals(String.valueOf(radioButtonReference)))
+            if(MainActivity.temporary.equals(radioButtonReference)) {
+                Log.i("TAG","changing returning date" );
+                calendar.add(Calendar.DATE, 15);
+            }
+
+            if(MainActivity.parmanent.equals(radioButtonReference)) {
+                Log.i("TAG","changing returning date" );
                 calendar.add(Calendar.MONTH, 6);
+            }
 
             String returningdate=calendar.get(Calendar.DATE)+"/"+calendar.get(Calendar.MONTH)+"/"+calendar.get(Calendar.YEAR);
             String key=databaseReference.push().getKey();
